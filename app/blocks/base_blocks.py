@@ -80,7 +80,10 @@ class Base_block(_ABC):
 		'''
 		A special method for a block that receives a signal is obliged to send a signal to another block
 		(return the id of this block) or return None if the signal on this block ends
+
+		In case of an error, returns the error code (int)
 		'''
+
 		length = len(self.adjacents)
 		
 		if length == 1:
@@ -114,17 +117,64 @@ class Start_block(Base_block):
 		return Base_block.signal(self, graph, from_block, run_time_data)
 
 
-class Decimal_variable_block(Base_block):
+class Variable_block(Base_block):
 	'''
-	Block for creating or updating the value of a variable
+	Base block, for all variable blocks
 
 	Block number 102
 	'''
 
-	from decimal import Decimal as _Decimal # limiting the availability area
+	variable_type: _typing.Any = None
+
+	def get_variable_value(self, /) -> _typing.Any | int: # Returns int if it raises NameError
+		return self.variable_type(self.payload['variable_value'])
+
+
+	def compatibility_of_variable_name(self, /, run_time_data) -> True | int: # Returns int if it raises NameError
+		'''
+		Checking the variable name for type compatibility
+
+		If the variable already exists and its type does not match the new one, there will be an error
+		'''
+
+		get_variable = run_time_data.get(self.payload['variable_name'])
+
+		if not get_variable and type(get_variable) != self.variable_type:
+			raise NameError
+
+		return True
+
+	def set_variable(self, /, run_time_data, variable_value) -> True | int: # Returns int if it raises Exception
+		run_time_data.update({self.payload['variable_name']: variable_value})
+
+		return True
+
 
 	@_wraps(Base_block.signal)
 	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
-		run_time_data[self.payload['variable_name']] = self._Decimal(self.payload['variable_value'])
+		if type(variable_value := self.get_variable_value()) == int: # check: error code or variable value returned
+			return variable_value
+
+		if (compatibility := self.compatibility_of_variable_name(run_time_data)) is not True: #check: error code returned or verification was successful
+			return compatibility
+
+
+		if (set_variable_result := self.set_variable(run_time_data, variable_value) is not True):
+			return set_variable_result
 
 		return Base_block.signal(self, graph, from_block, run_time_data)
+
+
+class Decimal_variable_block(Variable_block):
+	'''
+	A block for a decimal number variable
+
+	Block number 103
+	'''
+
+	from decimal import Decimal as _Decimal # limiting the availability area
+
+	variable_type = _Decimal
+
+
+
