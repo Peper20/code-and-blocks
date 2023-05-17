@@ -3,7 +3,11 @@ Module for basic block classes.
 
 The class hierarchy for blocks is:
 Base_block
-└──Start_block
+ ├── Start_block
+ └── Variable_block
+      ├── Decimal_variable_block
+      └── Bool_variable_block
+
 '''
 
 # requirements imports begin {
@@ -190,6 +194,18 @@ class Decimal_variable_block(Variable_block):
 	from decimal import Decimal as _Decimal # limiting the availability area
 
 	variable_type = _Decimal
+
+
+class Bool_variable_block(Variable_block):
+	'''
+	A block for a decimal number variable
+
+	Block number 103
+	'''
+
+	__block_number = 104
+
+	variable_type = bool
 
 
 
