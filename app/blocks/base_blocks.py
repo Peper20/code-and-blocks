@@ -43,11 +43,11 @@ class Base_block(_ABC):
 	Block number 100
 	'''
 
-	__block_number = 100
+	_block_number = 100
 
 	@property
 	def block_number(self):
-		return self.__block_number
+		return self._block_number
 
 
 	block_id: str = None
@@ -123,7 +123,7 @@ class Start_block(Base_block):
 	Block number 101
 	'''
 
-	__block_number = 101
+	_block_number = 101
 
 
 	@_wraps(Base_block.signal)
@@ -138,7 +138,7 @@ class Variable_block(Base_block):
 	Block number 102
 	'''
 
-	__block_number = 102
+	_block_number = 102
 
 	variable_type: _typing.Any = None
 
@@ -188,7 +188,7 @@ class Decimal_variable_block(Variable_block):
 	Block number 103
 	'''
 
-	__block_number = 103
+	_block_number = 103
 
 
 	from decimal import Decimal as _Decimal # limiting the availability area
@@ -203,9 +203,13 @@ class Bool_variable_block(Variable_block):
 	Block number 103
 	'''
 
-	__block_number = 104
+	_block_number = 104
 
 	variable_type = bool
+
+
+
+
 
 
 
