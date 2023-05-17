@@ -198,7 +198,7 @@ class Decimal_variable_block(Variable_block):
 
 class Bool_variable_block(Variable_block):
 	'''
-	A block for a decimal number variable
+	A block for a bool value variable
 
 	Block number 103
 	'''
