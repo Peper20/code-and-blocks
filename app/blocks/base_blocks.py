@@ -39,6 +39,13 @@ class Base_block(_ABC):
 	Block number 100
 	'''
 
+	__block_number = 100
+
+	@property
+	def block_number(self):
+		return self.__block_number
+
+
 	block_id: str = None
 	'id of the block to get it from the graph'
 
@@ -112,6 +119,9 @@ class Start_block(Base_block):
 	Block number 101
 	'''
 
+	__block_number = 101
+
+
 	@_wraps(Base_block.signal)
 	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
 		return Base_block.signal(self, graph, from_block, run_time_data)
@@ -123,6 +133,8 @@ class Variable_block(Base_block):
 
 	Block number 102
 	'''
+
+	__block_number = 102
 
 	variable_type: _typing.Any = None
 
@@ -171,6 +183,9 @@ class Decimal_variable_block(Variable_block):
 
 	Block number 103
 	'''
+
+	__block_number = 103
+
 
 	from decimal import Decimal as _Decimal # limiting the availability area
 
