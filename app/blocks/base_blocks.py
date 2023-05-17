@@ -142,7 +142,7 @@ class Variable_block(Base_block):
 		return self.variable_type(self.payload['variable_value'])
 
 
-	def compatibility_of_variable_name(self, /, run_time_data) -> True | int: # Returns int if it raises NameError
+	def compatibility_of_variable_name(self, /, run_time_data) -> bool | int: # Returns int if it raises NameError
 		'''
 		Checking the variable name for type compatibility
 
@@ -156,7 +156,7 @@ class Variable_block(Base_block):
 
 		return True
 
-	def set_variable(self, /, run_time_data, variable_value) -> True | int: # Returns int if it raises Exception
+	def set_variable(self, /, run_time_data, variable_value) -> bool | int: # Returns int if it raises Exception
 		run_time_data.update({self.payload['variable_name']: variable_value})
 
 		return True
