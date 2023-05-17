@@ -15,13 +15,16 @@ from abc import (
 	ABC as _ABC,
 	abstractmethod as _abstractmethod,
 )
+from functools import (
+	wraps as _wraps
+)
 
 # } requirements imports end
 
 
 # relative imports begin {
 
-from ..app_types import (
+from ..different_modules import (
 	exceptions as _exceptions,
 )
 
@@ -32,6 +35,8 @@ from ..app_types import (
 class Base_block(_ABC):
 	'''
 	The basic abstract class for all blocks
+
+	Block number 100
 	'''
 
 	block_id: str = None
@@ -76,7 +81,13 @@ class Base_block(_ABC):
 		A special method for a block that receives a signal is obliged to send a signal to another block
 		(return the id of this block) or return None if the signal on this block ends
 		'''
-		pass
+		length = len(self.adjacents)
+		
+		if length == 1:
+			return self.adjacents[0]
+
+		elif length != 0:
+			return tuple(self.adjacents)
 
 
 	async def boot_up(self, /, *args: _typing.Any, **kwargs: _typing.Any) -> None:
@@ -91,14 +102,29 @@ class Base_block(_ABC):
 		raise _exceptions.Method_is_undefined_error('boot_up method cannot be called unless overridden')
 
 
-
 class Start_block(Base_block):
-	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | None:
-		length = len(self.adjacents)
-		if length == 1:
-			return self.adjacents[0]
+	'''
+	The block of the beginning, there is in each graph, and only 1
 
-		elif length != 0:
-			return tuple(self.adjacents)
+	Block number 101
+	'''
+
+	@_wraps(Base_block.signal)
+	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
+		return Base_block.signal(self, graph, from_block, run_time_data)
 
 
+class Decimal_variable_block(Base_block):
+	'''
+	Block for creating or updating the value of a variable
+
+	Block number 102
+	'''
+
+	from decimal import Decimal as _Decimal # limiting the availability area
+
+	@_wraps(Base_block.signal)
+	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
+		run_time_data[self.payload['variable_name']] = self._Decimal(self.payload['variable_value'])
+
+		return Base_block.signal(self, graph, from_block, run_time_data)
