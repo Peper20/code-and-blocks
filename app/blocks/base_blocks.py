@@ -88,24 +88,19 @@ class Base_block(_ABC):
 
 
 	@_abstractmethod
-	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
+	def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
 		'''
-		A special method for a block that receives a signal is obliged to send a signal to another block
-		(return the id of this block) or return None if the signal on this block ends
-
+		A special method for processing the receipt of a signal to the block
+		Returns a tuple of block_ids, where it indicates which blocks to send the signal to next
+		If it is a finite block, returns None
 		In case of an error, returns the error code (int)
 		'''
 
-		length = len(self.adjacents)
-		
-		if length == 1:
-			return self.adjacents[0]
-
-		elif length != 0:
+		if self.adjacents:
 			return tuple(self.adjacents)
 
 
-	async def boot_up(self, /, *args: _typing.Any, **kwargs: _typing.Any) -> None:
+	def boot_up(self, /, *args: _typing.Any, **kwargs: _typing.Any) -> None:
 		'''
 		A special method for boot up a block where it is required.
 		Here you can insert additional code to initialize the block, for example, to process the payload.
@@ -128,7 +123,7 @@ class Start_block(Base_block):
 
 
 	@_wraps(Base_block.signal)
-	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
+	def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
 		return Base_block.signal(self, graph, from_block, run_time_data)
 
 
@@ -168,7 +163,7 @@ class Variable_block(Base_block):
 
 
 	@_wraps(Base_block.signal)
-	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
+	def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
 		if type(variable_value := self.get_variable_value()) == int: # check: error code or variable value returned
 			return variable_value
 
@@ -220,16 +215,16 @@ class If_block(Base_block):
 
 
 	@_wraps(Base_block.signal)
-	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
+	def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
 		if type(result := _secure_eval(self.payload['expression'])) == int: # check: error code or value returned
 			return result
 
 
 		if result:
-			return self.payload.get('true')
+			return (self.payload.get('true'),)
 
 		else:
-			return self.payload.get('false')
+			return (self.payload.get('false'),)
 
 
 
