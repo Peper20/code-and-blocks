@@ -2,16 +2,8 @@
 Block Execution Engine
 '''
 
-# declaring headlines {
-
-class _Executor: pass # Both classes store references to each other (the definition of the header is necessary for the use of annotations)
-class Engine: pass
-
-# }
-
-
 class _Executor:
-	_engine: Engine = None
+	_engine = None # annotation: Engine
 	_current_block: str = None
 	_last_block: str = None
 	_run_time_data: dict = None
