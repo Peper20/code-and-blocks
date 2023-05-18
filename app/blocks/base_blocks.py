@@ -30,6 +30,7 @@ from functools import (
 
 from ..different_modules import (
 	exceptions as _exceptions,
+	secure_eval as _secure_eval, # !!! БАГ, НЕ МОЖЕТ ОТЛИЧИТЬ ВОЗВРАЩЁННЫЙ РЕЗУЛЬТАТ В ВИДЕ INT ОТ ОШИБКИ. НУЖНО СОЗДАТЬ ОТДЕЛЬНЫЙ ТИП ERROR_CODE !!!
 )
 
 # } relative imports end
@@ -208,8 +209,27 @@ class Bool_variable_block(Variable_block):
 	variable_type = bool
 
 
+class If_block(Base_block):
+	'''
+	Block for logical expressions, if
+
+	Block number 105
+	'''
+
+	_block_number = 105
 
 
+	@_wraps(Base_block.signal)
+	async def signal(self, /, graph: dict, from_block: str, run_time_data: dict) -> str | tuple[str, ...] | None:
+		if type(result := _secure_eval(self.payload['expression'])) == int: # check: error code or value returned
+			return result
+
+
+		if result:
+			return self.payload.get('true')
+
+		else:
+			return self.payload.get('false')
 
 
 

@@ -80,8 +80,6 @@ def secure_eval(line, run_time_data=None):
 
 
 
-print(secure_eval("(200)", {"c": print}))
-
 
 
 
