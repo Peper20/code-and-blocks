@@ -1,5 +1,5 @@
 """
-File utility (manager) of the app
+The application startup file must be executed from the entry point
 
 Allows you to run the project in all possible modes:
 -t test_mode
