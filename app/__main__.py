@@ -51,5 +51,4 @@ async def main():
 	print(f'The program has finished its work in {end_time - start_time}')
 
 
-if __name__ == '__main__':
-	_run(main())
+_run(main())
